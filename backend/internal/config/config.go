@@ -21,6 +21,19 @@ type Config struct {
 	AllowedOrigins  []string
 	BCryptCost      int
 	NearbyMaxRadius int
+
+	// SMTP-настройки для отправки кодов подтверждения email.
+	// Если SMTPHost пустой — используется stub-отправитель,
+	// который пишет код в логи backend (для разработки).
+	SMTPHost     string
+	SMTPPort     string
+	SMTPUser     string
+	SMTPPassword string
+	SMTPFrom     string
+	SMTPUseTLS   bool
+
+	// Срок жизни кода подтверждения регистрации (по умолчанию 15 минут).
+	VerificationTTL time.Duration
 }
 
 func Load() *Config {
@@ -37,6 +50,15 @@ func Load() *Config {
 		AllowedOrigins:  []string{"*"},
 		BCryptCost:      atoi(getenv("BCRYPT_COST", "10")),
 		NearbyMaxRadius: atoi(getenv("NEARBY_MAX_RADIUS", "50000")),
+
+		SMTPHost:     getenv("SMTP_HOST", ""),
+		SMTPPort:     getenv("SMTP_PORT", "587"),
+		SMTPUser:     getenv("SMTP_USER", ""),
+		SMTPPassword: getenv("SMTP_PASSWORD", ""),
+		SMTPFrom:     getenv("SMTP_FROM", "noreply@sensory-navigator.local"),
+		SMTPUseTLS:   getenv("SMTP_USE_TLS", "true") == "true",
+
+		VerificationTTL: parseDuration(getenv("VERIFICATION_TTL", "15m")),
 	}
 	return cfg
 }

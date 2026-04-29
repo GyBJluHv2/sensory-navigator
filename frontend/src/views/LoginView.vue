@@ -9,6 +9,7 @@ const route = useRoute();
 
 const email = ref("");
 const password = ref("");
+const showPassword = ref(false);
 const error = ref<string | null>(null);
 
 async function submit(): Promise<void> {
@@ -36,7 +37,24 @@ async function submit(): Promise<void> {
 
       <div class="field">
         <label for="password">Пароль</label>
-        <input id="password" v-model="password" type="password" autocomplete="current-password" required />
+        <div class="password-wrap">
+          <input
+            id="password"
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            autocomplete="current-password"
+            required
+          />
+          <button
+            type="button"
+            class="toggle-pass"
+            @click="showPassword = !showPassword"
+            :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
+            :title="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
+          >
+            {{ showPassword ? '🙈' : '👁' }}
+          </button>
+        </div>
       </div>
 
       <button type="submit" :disabled="auth.loading">Войти</button>
@@ -50,4 +68,27 @@ async function submit(): Promise<void> {
 
 <style scoped>
 .mt { margin-top: 8px; }
+.password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.password-wrap input {
+  width: 100%;
+  padding-right: 44px;
+}
+.toggle-pass {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 0;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--fg-muted);
+}
+.toggle-pass:hover { color: var(--fg); }
 </style>

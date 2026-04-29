@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/GyBJluHv2/sensory-navigator/backend/internal/config"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/email"
 	"github.com/GyBJluHv2/sensory-navigator/backend/internal/handlers"
 	"github.com/GyBJluHv2/sensory-navigator/backend/internal/middleware"
 	"github.com/GyBJluHv2/sensory-navigator/backend/internal/services"
@@ -29,7 +30,24 @@ func NewRouter(db *gorm.DB, cfg *config.Config) *gin.Engine {
 	userSvc := services.NewUserService(db, cfg)
 	reviewSvc := services.NewReviewService(db)
 
-	authH := handlers.NewAuthHandler(userSvc, cfg)
+	// Выбираем отправителя писем по конфигурации:
+	// при пустом SMTP_HOST используется stub-логгер, иначе реальный SMTP.
+	var mailer email.Sender
+	if cfg.SMTPHost == "" {
+		mailer = email.LogSender{}
+	} else {
+		mailer = email.SMTPSender{
+			Host:     cfg.SMTPHost,
+			Port:     cfg.SMTPPort,
+			User:     cfg.SMTPUser,
+			Password: cfg.SMTPPassword,
+			From:     cfg.SMTPFrom,
+			UseTLS:   cfg.SMTPUseTLS,
+		}
+	}
+	verificationSvc := services.NewVerificationService(db, cfg, userSvc, mailer)
+
+	authH := handlers.NewAuthHandler(userSvc, verificationSvc, cfg)
 	usersH := handlers.NewUsersHandler(userSvc)
 	placesH := handlers.NewPlacesHandler(placeSvc)
 	reviewsH := handlers.NewReviewsHandler(reviewSvc)
@@ -42,6 +60,9 @@ func NewRouter(db *gorm.DB, cfg *config.Config) *gin.Engine {
 
 	// Открытые маршруты
 	api.POST("/auth/register", authH.Register)
+	api.POST("/auth/register-request", authH.RequestRegister)
+	api.POST("/auth/register-confirm", authH.ConfirmRegister)
+	api.POST("/auth/resend-code", authH.ResendCode)
 	api.POST("/auth/login", authH.Login)
 
 	api.GET("/categories", placesH.Categories)

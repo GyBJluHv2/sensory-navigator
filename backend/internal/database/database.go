@@ -23,7 +23,7 @@ func Connect(cfg *config.Config) (*gorm.DB, error) {
 
 func Migrate(db *gorm.DB) error {
 	if err := enablePostGIS(db); err != nil {
-		log.Printf("PostGIS недоступен (запрос nearby будет использовать формулу Хаверсина): %v", err)
+		log.Printf("PostGIS недоѝтупен (запроѝ nearby будет иѝпользовать формулу Хаверѝина): %v", err)
 	}
 
 	if err := db.AutoMigrate(
@@ -32,6 +32,7 @@ func Migrate(db *gorm.DB) error {
 		&models.Place{},
 		&models.Review{},
 		&models.Favorite{},
+		&models.VerificationCode{},
 	); err != nil {
 		return err
 	}
@@ -45,9 +46,9 @@ func enablePostGIS(db *gorm.DB) error {
 	return db.Exec("CREATE EXTENSION IF NOT EXISTS postgis").Error
 }
 
-// createGISTIndex добавляет geography-колонку и пространственный индекс,
-// если PostGIS установлен. Подобные манипуляции — единственный нетривиальный
-// и не покрываемый миграциями GORM участок логики на SQL.
+// createGISTIndex добавлѝет geography-колонку и проѝтранѝтвенный индекѝ,
+// еѝли PostGIS уѝтановлен. Подобные манипулѝции — единѝтвенный нетривиальный
+// и не покрываемый миграциѝми GORM учаѝток логики на SQL.
 func createGISTIndex(db *gorm.DB) {
 	statements := []string{
 		`ALTER TABLE places ADD COLUMN IF NOT EXISTS location GEOGRAPHY(POINT, 4326)`,
@@ -65,20 +66,20 @@ func createGISTIndex(db *gorm.DB) {
 	}
 	for _, stmt := range statements {
 		if err := db.Exec(stmt).Error; err != nil {
-			log.Printf("настройка PostGIS пропущена: %v", err)
+			log.Printf("наѝтройка PostGIS пропущена: %v", err)
 			return
 		}
 	}
 }
 
 var defaultCategories = []models.Category{
-	{Name: "Кафе и рестораны", Slug: "cafe", Description: "Заведения общественного питания", Icon: "cafe"},
-	{Name: "Библиотеки", Slug: "library", Description: "Тихие места для чтения и работы", Icon: "library"},
-	{Name: "Парки и скверы", Slug: "park", Description: "Открытые зелёные зоны", Icon: "park"},
-	{Name: "Торговые центры", Slug: "mall", Description: "Крупные торговые комплексы", Icon: "mall"},
-	{Name: "Музеи и выставки", Slug: "museum", Description: "Культурные пространства", Icon: "museum"},
-	{Name: "Кинотеатры", Slug: "cinema", Description: "Помещения для просмотра фильмов", Icon: "cinema"},
-	{Name: "Спортивные объекты", Slug: "sport", Description: "Залы, стадионы, бассейны", Icon: "sport"},
+	{Name: "Кафе и реѝтораны", Slug: "cafe", Description: "Заведениѝ общеѝтвенного питаниѝ", Icon: "cafe"},
+	{Name: "Библиотеки", Slug: "library", Description: "Тихие меѝта длѝ чтениѝ и работы", Icon: "library"},
+	{Name: "Парки и ѝкверы", Slug: "park", Description: "Открытые зелёные зоны", Icon: "park"},
+	{Name: "Торговые центры", Slug: "mall", Description: "Крупные торговые комплекѝы", Icon: "mall"},
+	{Name: "Музеи и выѝтавки", Slug: "museum", Description: "Культурные проѝтранѝтва", Icon: "museum"},
+	{Name: "Кинотеатры", Slug: "cinema", Description: "Помещениѝ длѝ проѝмотра фильмов", Icon: "cinema"},
+	{Name: "Спортивные объекты", Slug: "sport", Description: "Залы, ѝтадионы, баѝѝейны", Icon: "sport"},
 	{Name: "Образование", Slug: "edu", Description: "Учебные аудитории и коворкинги", Icon: "edu"},
 }
 

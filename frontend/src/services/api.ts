@@ -65,6 +65,8 @@ async function request<T>(
 // === Auth ===
 
 export const auth = {
+  // Старый одношаговый эндпоинт регистрации сохранён для обратной совместимости
+  // (используется CI/seed). Новый flow — два шага: requestRegister + confirmRegister.
   register: (input: {
     email: string;
     username: string;
@@ -72,6 +74,29 @@ export const auth = {
     display_name?: string;
   }) =>
     request<AuthResponse>("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  // Шаг 1: проверка email-формата + отправка 6-значного кода на почту.
+  requestRegister: (input: {
+    email: string;
+    username: string;
+    password: string;
+    display_name?: string;
+  }) =>
+    request<{ status: string; expires_at: string }>("/api/auth/register-request", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  // Шаг 2: подтверждение кода → создание пользователя → выдача JWT.
+  confirmRegister: (input: { email: string; code: string }) =>
+    request<AuthResponse>("/api/auth/register-confirm", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  // Повторная отправка кода на тот же email.
+  resendCode: (input: { email: string }) =>
+    request<{ status: string; expires_at: string }>("/api/auth/resend-code", {
       method: "POST",
       body: JSON.stringify(input),
     }),

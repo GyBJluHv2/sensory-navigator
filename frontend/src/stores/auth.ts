@@ -45,6 +45,15 @@ export const useAuthStore = defineStore("auth", () => {
     api.setToken(null);
   }
 
+  // applyToken используется на экране подтверждения email после
+  // успешной верификации кода: сервер уже выдал JWT, клиенту достаточно
+  // сохранить его и не делать повторный логин.
+  function applyToken(t: string, u: User): void {
+    token.value = t;
+    user.value = u;
+    api.setToken(t);
+  }
+
   async function fetchMe(): Promise<void> {
     if (!token.value) return;
     try {
@@ -66,6 +75,7 @@ export const useAuthStore = defineStore("auth", () => {
     login,
     register,
     logout,
+    applyToken,
     fetchMe,
     updateProfile,
   };

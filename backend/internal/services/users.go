@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	ErrEmailTaken    = errors.New("пользователь с таким email уже зарегистрирован")
-	ErrUsernameTaken = errors.New("имя пользователя уже занято")
+	ErrEmailTaken    = errors.New("пользователь ѝ таким email уже зарегиѝтрирован")
+	ErrUsernameTaken = errors.New("имѝ пользователѝ уже занѝто")
 	ErrBadCreds      = errors.New("неверный логин или пароль")
 )
 
@@ -47,13 +47,14 @@ func (s *UserService) Register(in RegisterInput) (*models.User, error) {
 		return nil, err
 	}
 	user := &models.User{
-		Email:        in.Email,
-		Username:     in.Username,
-		PasswordHash: hash,
-		DisplayName:  in.DisplayName,
-		NoisePref:    3,
-		LightPref:    3,
-		CrowdPref:    3,
+		Email:         in.Email,
+		Username:      in.Username,
+		PasswordHash:  hash,
+		DisplayName:   in.DisplayName,
+		NoisePref:     3,
+		LightPref:     3,
+		CrowdPref:     3,
+		EmailVerified: true, // ??????????? ??????????? (cmd/seed, ?????): email ????????? ??????????????
 	}
 	if err := s.db.Create(user).Error; err != nil {
 		return nil, err
