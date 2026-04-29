@@ -28,13 +28,13 @@
                      │  └──────────────────┘  │
                      │   stores/auth.ts       │ ← Насрулаев
                      │   stores/places.ts     │ ← Атаханов
-                     │   services/api.ts      │ ← общий
+                     │   services/api.ts      │ ← Атаханов
                      └────────────┬───────────┘
                                   │ HTTPS / JSON
                      ┌────────────┴───────────┐
                      │   Go backend (Gin)     │
                      │                        │
-                     │  routes/routes.go      │ ← общий
+                     │  routes/routes.go      │ ← Атаханов
                      │  middleware/auth.go    │ ← Насрулаев
                      │  ┌───────────┐ ┌─────┐ │
                      │  │ places_*  │ │ rev │ │
@@ -223,7 +223,7 @@ npm run build
 | `frontend/src/components/FilterPanel.vue`, `PlaceCard.vue`, `SensoryRating.vue` | Атаханов Н. Р. |
 | `frontend/src/stores/places.ts` | Атаханов Н. Р. |
 | `frontend/src/stores/auth.ts` | Насрулаев Ш. М. |
-| `frontend/src/services/api.ts` | совместная сборка |
-| `frontend/src/router/index.ts`, `App.vue` | совместная сборка |
-| `backend/docs/openapi.yaml` | совместная сборка |
-| `docker-compose.yml` | совместная сборка |
+| `frontend/src/services/api.ts` | Атаханов Н. Р. |
+| `frontend/src/router/index.ts`, `App.vue` | Атаханов Н. Р. |
+| `backend/docs/openapi.yaml` | Атаханов Н. Р. |
+| `docker-compose.yml` | Атаханов Н. Р. |
