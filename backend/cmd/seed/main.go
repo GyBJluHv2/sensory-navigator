@@ -6,10 +6,10 @@ package main
 import (
 	"log"
 
-	"github.com/atakhanov/sensory-navigator/backend/internal/auth"
-	"github.com/atakhanov/sensory-navigator/backend/internal/config"
-	"github.com/atakhanov/sensory-navigator/backend/internal/database"
-	"github.com/atakhanov/sensory-navigator/backend/internal/models"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/auth"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/config"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/database"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/models"
 )
 
 func main() {

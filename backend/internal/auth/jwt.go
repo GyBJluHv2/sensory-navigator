@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/atakhanov/sensory-navigator/backend/internal/config"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/config"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )

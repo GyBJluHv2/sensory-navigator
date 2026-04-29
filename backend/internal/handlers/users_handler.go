@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/atakhanov/sensory-navigator/backend/internal/middleware"
-	"github.com/atakhanov/sensory-navigator/backend/internal/services"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/middleware"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/services"
 	"github.com/gin-gonic/gin"
 )
 

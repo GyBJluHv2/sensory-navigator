@@ -1,4 +1,4 @@
-module github.com/atakhanov/sensory-navigator/backend
+module github.com/GyBJluHv2/sensory-navigator/backend
 
 go 1.21
 

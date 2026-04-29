@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/atakhanov/sensory-navigator/backend/internal/middleware"
-	"github.com/atakhanov/sensory-navigator/backend/internal/models"
-	"github.com/atakhanov/sensory-navigator/backend/internal/services"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/middleware"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/models"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/services"
 	"github.com/gin-gonic/gin"
 )
 

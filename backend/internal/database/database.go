@@ -4,8 +4,8 @@ import (
 	"errors"
 	"log"
 
-	"github.com/atakhanov/sensory-navigator/backend/internal/config"
-	"github.com/atakhanov/sensory-navigator/backend/internal/models"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/config"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

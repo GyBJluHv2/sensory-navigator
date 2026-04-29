@@ -3,9 +3,9 @@ package services
 import (
 	"errors"
 
-	"github.com/atakhanov/sensory-navigator/backend/internal/auth"
-	"github.com/atakhanov/sensory-navigator/backend/internal/config"
-	"github.com/atakhanov/sensory-navigator/backend/internal/models"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/auth"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/config"
+	"github.com/GyBJluHv2/sensory-navigator/backend/internal/models"
 	"gorm.io/gorm"
 )
 
