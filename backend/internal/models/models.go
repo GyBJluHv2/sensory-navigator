@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// User — учётная запись пользователя сервиса.
+// User — учётнаѝ запиѝь пользователѝ ѝервиѝа.
 type User struct {
 	ID           uint64    `gorm:"primaryKey" json:"id"`
 	Email        string    `gorm:"uniqueIndex;size:255;not null" json:"email"`
@@ -19,7 +19,7 @@ type User struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
-// Category — категория места (кафе, библиотека, парк и т. п.).
+// Category — категориѝ меѝта (кафе, библиотека, парк и т. п.).
 type Category struct {
 	ID          uint64    `gorm:"primaryKey" json:"id"`
 	Name        string    `gorm:"uniqueIndex;size:128;not null" json:"name"`
@@ -29,9 +29,9 @@ type Category struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
-// Place — общественное место с координатами и характеристиками.
-// Координаты хранятся как пара широта/долгота (SRID 4326). При наличии PostGIS
-// дополнительно поддерживается колонка location типа GEOGRAPHY(POINT, 4326).
+// Place — общеѝтвенное меѝто ѝ координатами и характериѝтиками.
+// Координаты хранѝтѝѝ как пара широта/долгота (SRID 4326). При наличии PostGIS
+// дополнительно поддерживаетѝѝ колонка location типа GEOGRAPHY(POINT, 4326).
 type Place struct {
 	ID          uint64    `gorm:"primaryKey" json:"id"`
 	Name        string    `gorm:"size:255;not null" json:"name"`
@@ -45,17 +45,17 @@ type Place struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 
-	// Агрегированные оценки рассчитываются запросом для клиента.
-	AvgNoise   float64 `gorm:"-" json:"avg_noise"`
-	AvgLight   float64 `gorm:"-" json:"avg_light"`
-	AvgCrowd   float64 `gorm:"-" json:"avg_crowd"`
-	AvgSmell   float64 `gorm:"-" json:"avg_smell"`
-	AvgVisual  float64 `gorm:"-" json:"avg_visual"`
-	OverallAvg float64 `gorm:"-" json:"overall_avg"`
-	ReviewsCnt int     `gorm:"-" json:"reviews_count"`
+	// Нгрегированные оценки раѝѝчитываютѝѝ запроѝом длѝ клиента.
+	AvgNoise   float64 `gorm:"->;-:migration" json:"avg_noise"`
+	AvgLight   float64 `gorm:"->;-:migration" json:"avg_light"`
+	AvgCrowd   float64 `gorm:"->;-:migration" json:"avg_crowd"`
+	AvgSmell   float64 `gorm:"->;-:migration" json:"avg_smell"`
+	AvgVisual  float64 `gorm:"->;-:migration" json:"avg_visual"`
+	OverallAvg float64 `gorm:"->;-:migration" json:"overall_avg"`
+	ReviewsCnt int     `gorm:"->;-:migration" json:"reviews_count"`
 }
 
-// Review — отзыв пользователя о месте с сенсорными оценками 1..5.
+// Review — отзыв пользователѝ о меѝте ѝ ѝенѝорными оценками 1..5.
 type Review struct {
 	ID         uint64    `gorm:"primaryKey" json:"id"`
 	PlaceID    uint64    `gorm:"index;not null" json:"place_id"`
@@ -71,7 +71,7 @@ type Review struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
-// Favorite — избранное место пользователя.
+// Favorite — избранное меѝто пользователѝ.
 type Favorite struct {
 	UserID    uint64    `gorm:"primaryKey" json:"user_id"`
 	PlaceID   uint64    `gorm:"primaryKey" json:"place_id"`
