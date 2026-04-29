@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/GyBJluHv2/sensory-navigator/backend/internal/models"
 	"gorm.io/gorm"
@@ -16,7 +17,7 @@ func NewPlaceService(db *gorm.DB) *PlaceService {
 	return &PlaceService{db: db}
 }
 
-// PlaceFilter описывает критерии для выборки мест.
+// PlaceFilter ????????? ???????? ??? ??????? ????.
 type PlaceFilter struct {
 	CategoryID uint64
 	Search     string
@@ -29,14 +30,36 @@ type PlaceFilter struct {
 	Offset     int
 }
 
-// List возвращает места с агрегированными оценками.
+// List ?????????? ????? ? ??????????????? ????????.
 func (s *PlaceService) List(filter PlaceFilter) ([]models.Place, error) {
 	if filter.Limit == 0 || filter.Limit > 500 {
 		filter.Limit = 200
 	}
 
-	q := s.db.Model(&models.Place{}).
-		Preload("Category").
+	// ?????????? ????????? ??? ???????????? JOIN-??????????.
+	// ???? Place ?? ????? ????????? ??????? places + ????????, ???????
+	// ? ????? Place ???????? gorm:"-" ? ?????? ?? ???????? ? Scan ????????.
+	type placeRow struct {
+		ID          uint64    `gorm:"column:id"`
+		Name        string    `gorm:"column:name"`
+		Address     string    `gorm:"column:address"`
+		Description string    `gorm:"column:description"`
+		CategoryID  uint64    `gorm:"column:category_id"`
+		Latitude    float64   `gorm:"column:latitude"`
+		Longitude   float64   `gorm:"column:longitude"`
+		CreatedByID uint64    `gorm:"column:created_by_id"`
+		CreatedAt   time.Time `gorm:"column:created_at"`
+		UpdatedAt   time.Time `gorm:"column:updated_at"`
+		AvgNoise    float64   `gorm:"column:avg_noise"`
+		AvgLight    float64   `gorm:"column:avg_light"`
+		AvgCrowd    float64   `gorm:"column:avg_crowd"`
+		AvgSmell    float64   `gorm:"column:avg_smell"`
+		AvgVisual   float64   `gorm:"column:avg_visual"`
+		OverallAvg  float64   `gorm:"column:overall_avg"`
+		ReviewsCnt  int       `gorm:"column:reviews_cnt"`
+	}
+
+	q := s.db.Table("places").
 		Joins("LEFT JOIN reviews ON reviews.place_id = places.id").
 		Group("places.id")
 
@@ -78,22 +101,45 @@ func (s *PlaceService) List(filter PlaceFilter) ([]models.Place, error) {
 
 	q = q.Limit(filter.Limit).Offset(filter.Offset)
 
-	var places []models.Place
-	if err := q.Scan(&places).Error; err != nil {
+	var rows []placeRow
+	if err := q.Scan(&rows).Error; err != nil {
 		return nil, err
 	}
 
-	for i := range places {
-		var cat models.Category
-		if err := s.db.First(&cat, places[i].CategoryID).Error; err == nil {
-			places[i].Category = cat
+	places := make([]models.Place, 0, len(rows))
+	for _, r := range rows {
+		p := models.Place{
+			ID:          r.ID,
+			Name:        r.Name,
+			Address:     r.Address,
+			Description: r.Description,
+			CategoryID:  r.CategoryID,
+			Latitude:    r.Latitude,
+			Longitude:   r.Longitude,
+			CreatedByID: r.CreatedByID,
+			CreatedAt:   r.CreatedAt,
+			UpdatedAt:   r.UpdatedAt,
+			AvgNoise:    r.AvgNoise,
+			AvgLight:    r.AvgLight,
+			AvgCrowd:    r.AvgCrowd,
+			AvgSmell:    r.AvgSmell,
+			AvgVisual:   r.AvgVisual,
+			OverallAvg:  r.OverallAvg,
+			ReviewsCnt:  r.ReviewsCnt,
 		}
+		if p.CategoryID != 0 {
+			var cat models.Category
+			if err := s.db.First(&cat, p.CategoryID).Error; err == nil {
+				p.Category = cat
+			}
+		}
+		places = append(places, p)
 	}
 
 	return places, nil
 }
 
-// Get возвращает место по идентификатору, включая агрегированные оценки.
+// Get ?????????? ????? ?? ??????????????, ??????? ?????????????? ??????.
 func (s *PlaceService) Get(id uint64) (*models.Place, error) {
 	var place models.Place
 	if err := s.db.Preload("Category").First(&place, id).Error; err != nil {
@@ -129,17 +175,17 @@ func (s *PlaceService) Get(id uint64) (*models.Place, error) {
 	return &place, nil
 }
 
-// Nearby возвращает места в заданном радиусе (в метрах).
-// Если PostGIS установлен, используется ST_DWithin (через колонку location).
-// Иначе применяется сферическая формула Хаверсина — встроенный фолбэк.
+// Nearby ?????????? ????? ? ???????? ??????? (? ??????).
+// ???? PostGIS ??????????, ???????????? ST_DWithin (????? ??????? location).
+// ????? ??????????? ??????????? ??????? ????????? — ?????????? ??????.
 func (s *PlaceService) Nearby(lat, lon float64, radiusMeters int) ([]models.Place, error) {
 	if radiusMeters <= 0 {
-		return nil, errors.New("радиус должен быть положительным")
+		return nil, errors.New("?????? ?????? ???? ?????????????")
 	}
 
 	var places []models.Place
 
-	// Сначала пробуем PostGIS, если расширение установлено и колонка location существует.
+	// ??????? ??????? PostGIS, ???? ?????????? ??????????? ? ??????? location ??????????.
 	postGISErr := s.db.Raw(
 		`SELECT places.*, c.id AS "category__id", c.name AS "category__name",
 		        c.slug AS "category__slug", c.icon AS "category__icon"
@@ -159,7 +205,7 @@ func (s *PlaceService) Nearby(lat, lon float64, radiusMeters int) ([]models.Plac
 		return places, nil
 	}
 
-	// Fallback: расчёт через формулу Хаверсина (R = 6371000 м).
+	// Fallback: ?????? ????? ??????? ????????? (R = 6371000 ?).
 	q := s.db.Raw(
 		`SELECT * FROM places WHERE
 		   6371000 * acos(
@@ -232,22 +278,22 @@ func (s *PlaceService) fillAggregates(places []models.Place) {
 	}
 }
 
-// Create создаёт новое место.
+// Create ??????? ????? ?????.
 func (s *PlaceService) Create(p *models.Place) error {
 	return s.db.Create(p).Error
 }
 
-// Update сохраняет изменённое место.
+// Update ????????? ?????????? ?????.
 func (s *PlaceService) Update(p *models.Place) error {
 	return s.db.Save(p).Error
 }
 
-// Delete удаляет место по id.
+// Delete ??????? ????? ?? id.
 func (s *PlaceService) Delete(id uint64) error {
 	return s.db.Delete(&models.Place{}, id).Error
 }
 
-// Categories возвращает все доступные категории.
+// Categories ?????????? ??? ????????? ?????????.
 func (s *PlaceService) Categories() ([]models.Category, error) {
 	var cats []models.Category
 	err := s.db.Order("name").Find(&cats).Error

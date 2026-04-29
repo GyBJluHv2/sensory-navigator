@@ -46,13 +46,13 @@ type Place struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 
 	// Нгрегированные оценки раѝѝчитываютѝѝ запроѝом длѝ клиента.
-	AvgNoise   float64 `gorm:"->;-:migration" json:"avg_noise"`
-	AvgLight   float64 `gorm:"->;-:migration" json:"avg_light"`
-	AvgCrowd   float64 `gorm:"->;-:migration" json:"avg_crowd"`
-	AvgSmell   float64 `gorm:"->;-:migration" json:"avg_smell"`
-	AvgVisual  float64 `gorm:"->;-:migration" json:"avg_visual"`
-	OverallAvg float64 `gorm:"->;-:migration" json:"overall_avg"`
-	ReviewsCnt int     `gorm:"->;-:migration" json:"reviews_count"`
+	AvgNoise   float64 `gorm:"-" json:"avg_noise"`
+	AvgLight   float64 `gorm:"-" json:"avg_light"`
+	AvgCrowd   float64 `gorm:"-" json:"avg_crowd"`
+	AvgSmell   float64 `gorm:"-" json:"avg_smell"`
+	AvgVisual  float64 `gorm:"-" json:"avg_visual"`
+	OverallAvg float64 `gorm:"-" json:"overall_avg"`
+	ReviewsCnt int     `gorm:"-" json:"reviews_count"`
 }
 
 // Review — отзыв пользователѝ о меѝте ѝ ѝенѝорными оценками 1..5.
