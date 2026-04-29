@@ -1,0 +1,516 @@
+openapi: 3.0.3
+info:
+  title: Sensory Navigator API
+  version: 1.0.0
+  description: |
+    REST API сервиса «Сенсорный навигатор» — карта с отзывами для людей, склонных
+    к сенсорной перегрузке. Авторизация по JWT Bearer.
+servers:
+  - url: http://localhost:8080
+    description: локальный backend
+tags:
+  - name: auth
+    description: Регистрация и вход (модуль Насрулаева)
+  - name: users
+    description: Профиль (модуль Насрулаева)
+  - name: places
+    description: Места и геопоиск (модуль Атаханова)
+  - name: categories
+    description: Категории мест (модуль Атаханова)
+  - name: reviews
+    description: Отзывы и избранное (модуль Насрулаева)
+
+paths:
+  /health:
+    get:
+      summary: Проверка работоспособности
+      responses:
+        '200':
+          description: OK
+
+  /api/auth/register:
+    post:
+      tags: [auth]
+      summary: Регистрация нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterReq'
+      responses:
+        '201': { $ref: '#/components/responses/AuthResponse' }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+
+  /api/auth/login:
+    post:
+      tags: [auth]
+      summary: Авторизация по email и паролю
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginReq'
+      responses:
+        '200': { $ref: '#/components/responses/AuthResponse' }
+        '401': { $ref: '#/components/responses/Error' }
+
+  /api/me:
+    get:
+      tags: [users]
+      summary: Профиль текущего пользователя
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+    put:
+      tags: [users]
+      summary: Изменение профиля
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateProfileReq' }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+
+  /api/me/password:
+    put:
+      tags: [users]
+      summary: Смена пароля
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChangePasswordReq' }
+      responses:
+        '204': { description: пароль изменён }
+        '400': { $ref: '#/components/responses/Error' }
+
+  /api/categories:
+    get:
+      tags: [categories]
+      summary: Список категорий мест
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Category' }
+
+  /api/places:
+    get:
+      tags: [places]
+      summary: Список мест с фильтрацией
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: category_id
+          schema: { type: integer }
+        - in: query
+          name: noise_max
+          schema: { type: integer, minimum: 1, maximum: 5 }
+        - in: query
+          name: light_max
+          schema: { type: integer, minimum: 1, maximum: 5 }
+        - in: query
+          name: crowd_max
+          schema: { type: integer, minimum: 1, maximum: 5 }
+        - in: query
+          name: smell_max
+          schema: { type: integer, minimum: 1, maximum: 5 }
+        - in: query
+          name: visual_max
+          schema: { type: integer, minimum: 1, maximum: 5 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Place' }
+                  count: { type: integer }
+    post:
+      tags: [places]
+      summary: Создание нового места
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreatePlaceReq' }
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Place' }
+
+  /api/places/search:
+    get:
+      tags: [places]
+      summary: Поиск мест по строке (alias /api/places?q=...)
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Place' }
+
+  /api/places/nearby:
+    get:
+      tags: [places]
+      summary: Поиск мест в радиусе от точки
+      parameters:
+        - in: query
+          name: lat
+          required: true
+          schema: { type: number, format: double }
+        - in: query
+          name: lon
+          required: true
+          schema: { type: number, format: double }
+        - in: query
+          name: radius
+          schema: { type: integer, default: 1000 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Place' }
+
+  /api/places/{id}:
+    get:
+      tags: [places]
+      summary: Получить место по идентификатору
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Place' }
+        '404':
+          $ref: '#/components/responses/Error'
+    put:
+      tags: [places]
+      summary: Изменить место
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreatePlaceReq' }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Place' }
+    delete:
+      tags: [places]
+      summary: Удалить место
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204': { description: удалено }
+
+  /api/places/{id}/reviews:
+    get:
+      tags: [reviews]
+      summary: Список отзывов о месте
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Review' }
+    post:
+      tags: [reviews]
+      summary: Создать отзыв
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReviewReq' }
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Review' }
+
+  /api/reviews/{id}:
+    put:
+      tags: [reviews]
+      summary: Изменить собственный отзыв
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReviewReq' }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Review' }
+    delete:
+      tags: [reviews]
+      summary: Удалить собственный отзыв
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204': { description: удалено }
+
+  /api/reviews/me:
+    get:
+      tags: [reviews]
+      summary: Мои отзывы
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Review' }
+
+  /api/places/{id}/favorite:
+    post:
+      tags: [reviews]
+      summary: Добавить место в избранное
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '201': { description: добавлено }
+    delete:
+      tags: [reviews]
+      summary: Убрать из избранного
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204': { description: удалено }
+
+  /api/favorites:
+    get:
+      tags: [reviews]
+      summary: Список избранных мест
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Place' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:           { type: integer }
+        email:        { type: string }
+        username:     { type: string }
+        display_name: { type: string }
+        avatar_url:   { type: string }
+        noise_pref:   { type: integer }
+        light_pref:   { type: integer }
+        crowd_pref:   { type: integer }
+        created_at:   { type: string, format: date-time }
+    RegisterReq:
+      type: object
+      required: [email, username, password]
+      properties:
+        email:        { type: string, format: email }
+        username:     { type: string, minLength: 3, maxLength: 64 }
+        password:     { type: string, minLength: 6 }
+        display_name: { type: string }
+    LoginReq:
+      type: object
+      required: [email, password]
+      properties:
+        email:    { type: string, format: email }
+        password: { type: string }
+    UpdateProfileReq:
+      type: object
+      properties:
+        display_name: { type: string }
+        avatar_url:   { type: string }
+        noise_pref:   { type: integer, minimum: 1, maximum: 5 }
+        light_pref:   { type: integer, minimum: 1, maximum: 5 }
+        crowd_pref:   { type: integer, minimum: 1, maximum: 5 }
+    ChangePasswordReq:
+      type: object
+      required: [old_password, new_password]
+      properties:
+        old_password: { type: string }
+        new_password: { type: string, minLength: 6 }
+    Category:
+      type: object
+      properties:
+        id:           { type: integer }
+        name:         { type: string }
+        slug:         { type: string }
+        description:  { type: string }
+        icon:         { type: string }
+    Place:
+      type: object
+      properties:
+        id:            { type: integer }
+        name:          { type: string }
+        address:       { type: string }
+        description:   { type: string }
+        category_id:   { type: integer }
+        category:      { $ref: '#/components/schemas/Category' }
+        latitude:      { type: number, format: double }
+        longitude:     { type: number, format: double }
+        avg_noise:     { type: number }
+        avg_light:     { type: number }
+        avg_crowd:     { type: number }
+        avg_smell:     { type: number }
+        avg_visual:    { type: number }
+        overall_avg:   { type: number }
+        reviews_count: { type: integer }
+        created_at:    { type: string, format: date-time }
+    CreatePlaceReq:
+      type: object
+      required: [name, category_id, latitude, longitude]
+      properties:
+        name:        { type: string }
+        address:     { type: string }
+        description: { type: string }
+        category_id: { type: integer }
+        latitude:    { type: number, format: double, minimum: -90, maximum: 90 }
+        longitude:   { type: number, format: double, minimum: -180, maximum: 180 }
+    Review:
+      type: object
+      properties:
+        id:         { type: integer }
+        place_id:   { type: integer }
+        user_id:    { type: integer }
+        user:       { $ref: '#/components/schemas/User' }
+        text:       { type: string }
+        noise:      { type: integer, minimum: 1, maximum: 5 }
+        light:      { type: integer, minimum: 1, maximum: 5 }
+        crowd:      { type: integer, minimum: 1, maximum: 5 }
+        smell:      { type: integer, minimum: 1, maximum: 5 }
+        visual:     { type: integer, minimum: 1, maximum: 5 }
+        created_at: { type: string, format: date-time }
+    ReviewReq:
+      type: object
+      required: [noise, light, crowd, smell, visual]
+      properties:
+        text:   { type: string }
+        noise:  { type: integer, minimum: 1, maximum: 5 }
+        light:  { type: integer, minimum: 1, maximum: 5 }
+        crowd:  { type: integer, minimum: 1, maximum: 5 }
+        smell:  { type: integer, minimum: 1, maximum: 5 }
+        visual: { type: integer, minimum: 1, maximum: 5 }
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+
+  responses:
+    Error:
+      description: Ошибка
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    AuthResponse:
+      description: Токен и пользователь
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:      { type: string }
+              expires_at: { type: string, format: date-time }
+              user:       { $ref: '#/components/schemas/User' }

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+*.exe
+.env
+.env.local
+.idea/
+.vscode/
+backend/bin/
+backend/coverage.out
+frontend/src-tauri/target/
