@@ -217,7 +217,7 @@ npm run build
 | `backend/internal/middleware/auth.go` | Насрулаев Ш. М. |
 | `backend/internal/database/database.go` (PostGIS, places) | Атаханов Н. Р. |
 | `backend/internal/database/database.go` (users, reviews seed) | Насрулаев Ш. М. |
-| `backend/internal/routes/routes.go` | совместная сборка |
+| `backend/internal/routes/routes.go` | Атаханов Н. Р. |
 | `frontend/src/views/MapView.vue`, `AddPlaceView.vue`, `PlaceView.vue` | Атаханов Н. Р. |
 | `frontend/src/views/LoginView.vue`, `RegisterView.vue`, `ProfileView.vue`, `FavoritesView.vue` | Насрулаев Ш. М. |
 | `frontend/src/components/FilterPanel.vue`, `PlaceCard.vue`, `SensoryRating.vue` | Атаханов Н. Р. |
