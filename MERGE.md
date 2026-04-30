@@ -62,7 +62,7 @@
 ### 1. Middleware авторизации
 
 **Поставщик**: модуль пользователей и отзывов (Насрулаев Шарапудин Махадович)
-**Потребитель**: модуль карты и мест (Атаханов Набиулла Румиевич)
+**Потребитель**: модуль карты и мест (Атаханов Набиюлла Румиевич)
 
 В индивидуальной сборке Атаханова эндпоинты `POST/PUT/DELETE /api/places`
 открыты для всех. При объединении они защищаются middleware:
@@ -84,7 +84,7 @@ auth.Use(middleware.RequireAuth(cfg))
 ### 2. Агрегированные сенсорные оценки места
 
 **Поставщик**: модуль пользователей и отзывов (Насрулаев Шарапудин Махадович)
-**Потребитель**: модуль карты и мест (Атаханов Набиулла Румиевич)
+**Потребитель**: модуль карты и мест (Атаханов Набиюлла Румиевич)
 
 В индивидуальной сборке модуля карты карточка места показывает только
 название, адрес и категорию. После интеграции `places_handler.go` и
@@ -136,7 +136,7 @@ git init
 
 # 2. Заливаем код модуля карты как стартовую базу
 cp -r ../Project_Атаханов/* .
-git add . && git commit -m "feat: модуль карты и мест (Атаханов Набиулла Румиевич)"
+git add . && git commit -m "feat: модуль карты и мест (Атаханов Набиюлла Румиевич)"
 
 # 3. Добавляем модуль пользователей и отзывов
 cp -r ../Project_Насрулаев/backend/internal/auth         backend/internal/auth
@@ -206,27 +206,27 @@ npm run build
 
 | Файл / каталог | Автор |
 |----------------|-------|
-| `backend/internal/models/Place`, `Category` | Атаханов Набиулла Румиевич |
+| `backend/internal/models/Place`, `Category` | Атаханов Набиюлла Румиевич |
 | `backend/internal/models/User`, `Review`, `Favorite`, `VerificationCode` | Насрулаев Шарапудин Махадович |
-| `backend/internal/services/places.go` | Атаханов Набиулла Румиевич |
+| `backend/internal/services/places.go` | Атаханов Набиюлла Румиевич |
 | `backend/internal/services/users.go`, `verification.go` | Насрулаев Шарапудин Махадович |
 | `backend/internal/services/reviews.go` | Насрулаев Шарапудин Махадович |
-| `backend/internal/handlers/places_handler.go` | Атаханов Набиулла Румиевич |
+| `backend/internal/handlers/places_handler.go` | Атаханов Набиюлла Румиевич |
 | `backend/internal/handlers/auth_handler.go` | Насрулаев Шарапудин Махадович |
 | `backend/internal/handlers/users_handler.go` | Насрулаев Шарапудин Махадович |
 | `backend/internal/handlers/reviews_handler.go` | Насрулаев Шарапудин Махадович |
 | `backend/internal/auth/jwt.go` | Насрулаев Шарапудин Махадович |
 | `backend/internal/middleware/auth.go` | Насрулаев Шарапудин Махадович |
-| `backend/internal/database/database.go` (PostGIS, places) | Атаханов Набиулла Румиевич |
+| `backend/internal/database/database.go` (PostGIS, places) | Атаханов Набиюлла Румиевич |
 | `backend/internal/database/database.go` (users, reviews seed) | Насрулаев Шарапудин Махадович |
-| `backend/internal/routes/routes.go` | Атаханов Набиулла Румиевич |
-| `frontend/src/views/MapView.vue`, `AddPlaceView.vue`, `PlaceView.vue` | Атаханов Набиулла Румиевич |
+| `backend/internal/routes/routes.go` | Атаханов Набиюлла Румиевич |
+| `frontend/src/views/MapView.vue`, `AddPlaceView.vue`, `PlaceView.vue` | Атаханов Набиюлла Румиевич |
 | `frontend/src/views/LoginView.vue`, `RegisterView.vue`, `ProfileView.vue`, `FavoritesView.vue`, `VerifyEmailView.vue` | Насрулаев Шарапудин Махадович |
-| `frontend/src/components/FilterPanel.vue`, `PlaceCard.vue`, `SensoryRating.vue` | Атаханов Набиулла Румиевич |
-| `frontend/src/stores/places.ts` | Атаханов Набиулла Румиевич |
+| `frontend/src/components/FilterPanel.vue`, `PlaceCard.vue`, `SensoryRating.vue` | Атаханов Набиюлла Румиевич |
+| `frontend/src/stores/places.ts` | Атаханов Набиюлла Румиевич |
 | `frontend/src/stores/auth.ts` | Насрулаев Шарапудин Махадович |
-| `frontend/src/services/api.ts` | Атаханов Набиулла Румиевич |
-| `frontend/src/router/index.ts`, `App.vue` | Атаханов Набиулла Румиевич |
-| `backend/docs/openapi.yaml` | Атаханов Набиулла Румиевич |
-| `docker-compose.yml` | Атаханов Набиулла Румиевич |
+| `frontend/src/services/api.ts` | Атаханов Набиюлла Румиевич |
+| `frontend/src/router/index.ts`, `App.vue` | Атаханов Набиюлла Румиевич |
+| `backend/docs/openapi.yaml` | Атаханов Набиюлла Румиевич |
+| `docker-compose.yml` | Атаханов Набиюлла Румиевич |
 | `backend/internal/email/sender.go` | Насрулаев Шарапудин Махадович |

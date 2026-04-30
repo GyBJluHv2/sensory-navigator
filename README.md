@@ -11,12 +11,12 @@
 > Курсовой проект, ФКН НИУ ВШЭ, ОП «Программная инженерия», 2025/2026.
 >
 > Команда:
-> - **Атаханов Н. Р.** (БПИ234) — модуль карты, мест, геопоиска, фильтрации
+> - **Атаханов Набиюлла Румиевич** (БПИ234) — модуль карты, мест, геопоиска, фильтрации
 >   (`backend/internal/services/places.go`,
 >   `backend/internal/handlers/places_handler.go`,
 >   фронтенд: `frontend/src/views/MapView.vue`,
 >   `frontend/src/components/{FilterPanel,PlaceCard,SensoryRating}.vue`).
-> - **Насрулаев Ш. М.** (БПИ234) — модуль пользователей, авторизации, отзывов,
+> - **Насрулаев Шарапудин Махадович** (БПИ234) — модуль пользователей, авторизации, отзывов,
 >   профилей (`backend/internal/services/{users,reviews}.go`,
 >   `backend/internal/handlers/{auth,users,reviews}_handler.go`,
 >   фронтенд: `frontend/src/views/{Login,Register,Profile,Place,Favorites}View.vue`).
