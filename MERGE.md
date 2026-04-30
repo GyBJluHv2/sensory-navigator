@@ -61,8 +61,8 @@
 
 ### 1. Middleware авторизации
 
-**Поставщик**: модуль пользователей и отзывов (Насрулаев Ш. М.)
-**Потребитель**: модуль карты и мест (Атаханов Н. Р.)
+**Поставщик**: модуль пользователей и отзывов (Насрулаев Шарапудин Махадович)
+**Потребитель**: модуль карты и мест (Атаханов Набиулла Румиевич)
 
 В индивидуальной сборке Атаханова эндпоинты `POST/PUT/DELETE /api/places`
 открыты для всех. При объединении они защищаются middleware:
@@ -83,8 +83,8 @@ auth.Use(middleware.RequireAuth(cfg))
 
 ### 2. Агрегированные сенсорные оценки места
 
-**Поставщик**: модуль пользователей и отзывов (Насрулаев Ш. М.)
-**Потребитель**: модуль карты и мест (Атаханов Н. Р.)
+**Поставщик**: модуль пользователей и отзывов (Насрулаев Шарапудин Махадович)
+**Потребитель**: модуль карты и мест (Атаханов Набиулла Румиевич)
 
 В индивидуальной сборке модуля карты карточка места показывает только
 название, адрес и категорию. После интеграции `places_handler.go` и
@@ -136,7 +136,7 @@ git init
 
 # 2. Заливаем код модуля карты как стартовую базу
 cp -r ../Project_Атаханов/* .
-git add . && git commit --trailer "Made-with: Cursor" -m "feat: модуль карты и мест (Атаханов Н. Р.)"
+git add . && git commit -m "feat: модуль карты и мест (Атаханов Набиулла Румиевич)"
 
 # 3. Добавляем модуль пользователей и отзывов
 cp -r ../Project_Насрулаев/backend/internal/auth         backend/internal/auth
@@ -149,32 +149,34 @@ cp ../Project_Насрулаев/backend/internal/handlers/reviews_handler.go ba
 cp -r ../Project_Насрулаев/frontend/src/views/{Login,Register,Profile,Favorites}View.vue \
       frontend/src/views/
 cp ../Project_Насрулаев/frontend/src/stores/auth.ts frontend/src/stores/
-git add . && git commit --trailer "Made-with: Cursor" -m "feat: модуль пользователей и отзывов (Насрулаев Ш. М.)"
+git add . && git commit -m "feat: модуль пользователей и отзывов (Насрулаев Шарапудин Махадович)"
 
 # 4. Объединяем модели и миграции
-# В backend/internal/models/models.go должны быть все 5 типов:
-#   User, Category, Place, Review, Favorite
-# В backend/internal/database/database.go AutoMigrate должен включать все 5 моделей.
-git add . && git commit --trailer "Made-with: Cursor" -m "merge: общая схема БД (5 таблиц)"
+# В backend/internal/models/models.go должны быть все основные типы сущностей,
+# включая User, Category, Place, Review, Favorite и (при двухшаговой регистрации)
+# VerificationCode.
+# В backend/internal/database/database.go AutoMigrate должен включать все эти модели.
+git add . && git commit -m "merge: общая схема БД и миграции"
 
 # 5. Объединяем маршруты
 # В backend/internal/routes/routes.go объединяются все эндпоинты:
 #   - /api/auth/* (открытые)
 #   - /api/places, /api/categories (открытые на чтение)
 #   - защищённая группа с RequireAuth для записи и пользовательских эндпоинтов
-git add . && git commit --trailer "Made-with: Cursor" -m "merge: единый router с защищёнными группами"
+git add . && git commit -m "merge: единый router с защищёнными группами"
 
 # 6. Сливаем frontend
-# В App.vue и router/index.ts должны быть все 7 экранов.
+# В App.vue и router/index.ts должны быть все основные экраны (карта, место,
+# добавление места, вход, регистрация, подтверждение email, профиль, избранное).
 # stores/places.ts (Атаханов) и stores/auth.ts (Насрулаев) живут параллельно.
 # services/api.ts объединяется: prefix /api общий, токен подкладывается из stores/auth.
-git add . && git commit --trailer "Made-with: Cursor" -m "merge: единый SPA (7 экранов)"
+git add . && git commit -m "merge: единый SPA (все экраны)"
 
 # 7. Расширяем агрегаты
 # В services/places.go добавляется JOIN на reviews и AVG-агрегаты,
 # Place в models.go получает поля avg_noise, avg_light, avg_crowd,
 # avg_smell, avg_visual, overall_avg, reviews_count.
-git add . && git commit --trailer "Made-with: Cursor" -m "merge: интеграция агрегатов отзывов в карточку места"
+git add . && git commit -m "merge: интеграция агрегатов отзывов в карточку места"
 ```
 
 ## Как проверить корректность объединения
@@ -204,26 +206,27 @@ npm run build
 
 | Файл / каталог | Автор |
 |----------------|-------|
-| `backend/internal/models/Place`, `Category` | Атаханов Н. Р. |
-| `backend/internal/models/User`, `Review`, `Favorite` | Насрулаев Ш. М. |
-| `backend/internal/services/places.go` | Атаханов Н. Р. |
-| `backend/internal/services/users.go` | Насрулаев Ш. М. |
-| `backend/internal/services/reviews.go` | Насрулаев Ш. М. |
-| `backend/internal/handlers/places_handler.go` | Атаханов Н. Р. |
-| `backend/internal/handlers/auth_handler.go` | Насрулаев Ш. М. |
-| `backend/internal/handlers/users_handler.go` | Насрулаев Ш. М. |
-| `backend/internal/handlers/reviews_handler.go` | Насрулаев Ш. М. |
-| `backend/internal/auth/jwt.go` | Насрулаев Ш. М. |
-| `backend/internal/middleware/auth.go` | Насрулаев Ш. М. |
-| `backend/internal/database/database.go` (PostGIS, places) | Атаханов Н. Р. |
-| `backend/internal/database/database.go` (users, reviews seed) | Насрулаев Ш. М. |
-| `backend/internal/routes/routes.go` | Атаханов Н. Р. |
-| `frontend/src/views/MapView.vue`, `AddPlaceView.vue`, `PlaceView.vue` | Атаханов Н. Р. |
-| `frontend/src/views/LoginView.vue`, `RegisterView.vue`, `ProfileView.vue`, `FavoritesView.vue` | Насрулаев Ш. М. |
-| `frontend/src/components/FilterPanel.vue`, `PlaceCard.vue`, `SensoryRating.vue` | Атаханов Н. Р. |
-| `frontend/src/stores/places.ts` | Атаханов Н. Р. |
-| `frontend/src/stores/auth.ts` | Насрулаев Ш. М. |
-| `frontend/src/services/api.ts` | Атаханов Н. Р. |
-| `frontend/src/router/index.ts`, `App.vue` | Атаханов Н. Р. |
-| `backend/docs/openapi.yaml` | Атаханов Н. Р. |
-| `docker-compose.yml` | Атаханов Н. Р. |
+| `backend/internal/models/Place`, `Category` | Атаханов Набиулла Румиевич |
+| `backend/internal/models/User`, `Review`, `Favorite`, `VerificationCode` | Насрулаев Шарапудин Махадович |
+| `backend/internal/services/places.go` | Атаханов Набиулла Румиевич |
+| `backend/internal/services/users.go`, `verification.go` | Насрулаев Шарапудин Махадович |
+| `backend/internal/services/reviews.go` | Насрулаев Шарапудин Махадович |
+| `backend/internal/handlers/places_handler.go` | Атаханов Набиулла Румиевич |
+| `backend/internal/handlers/auth_handler.go` | Насрулаев Шарапудин Махадович |
+| `backend/internal/handlers/users_handler.go` | Насрулаев Шарапудин Махадович |
+| `backend/internal/handlers/reviews_handler.go` | Насрулаев Шарапудин Махадович |
+| `backend/internal/auth/jwt.go` | Насрулаев Шарапудин Махадович |
+| `backend/internal/middleware/auth.go` | Насрулаев Шарапудин Махадович |
+| `backend/internal/database/database.go` (PostGIS, places) | Атаханов Набиулла Румиевич |
+| `backend/internal/database/database.go` (users, reviews seed) | Насрулаев Шарапудин Махадович |
+| `backend/internal/routes/routes.go` | Атаханов Набиулла Румиевич |
+| `frontend/src/views/MapView.vue`, `AddPlaceView.vue`, `PlaceView.vue` | Атаханов Набиулла Румиевич |
+| `frontend/src/views/LoginView.vue`, `RegisterView.vue`, `ProfileView.vue`, `FavoritesView.vue`, `VerifyEmailView.vue` | Насрулаев Шарапудин Махадович |
+| `frontend/src/components/FilterPanel.vue`, `PlaceCard.vue`, `SensoryRating.vue` | Атаханов Набиулла Румиевич |
+| `frontend/src/stores/places.ts` | Атаханов Набиулла Румиевич |
+| `frontend/src/stores/auth.ts` | Насрулаев Шарапудин Махадович |
+| `frontend/src/services/api.ts` | Атаханов Набиулла Румиевич |
+| `frontend/src/router/index.ts`, `App.vue` | Атаханов Набиулла Румиевич |
+| `backend/docs/openapi.yaml` | Атаханов Набиулла Румиевич |
+| `docker-compose.yml` | Атаханов Набиулла Румиевич |
+| `backend/internal/email/sender.go` | Насрулаев Шарапудин Махадович |

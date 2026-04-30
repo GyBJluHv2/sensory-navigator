@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// User — учётнаѝ запиѝь пользователѝ ѝервиѝа.
+// User — учётная запись пользователя сервиса.
 type User struct {
 	ID           uint64    `gorm:"primaryKey" json:"id"`
 	Email        string    `gorm:"uniqueIndex;size:255;not null" json:"email"`
@@ -20,15 +20,14 @@ type User struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
-// VerificationCode ?????? ??????????? ??? ????????????? email.
-// ??? ???????????? ???????????? ????? (?? ????????? 15 ?????) ? ?????
-// ???? ??????????? ?????? ???? ???: ????? ???????? ?????????
-// ???? UsedAt ???????? ???????? time.Now().
+// VerificationCode — временная запись двухшаговой регистрации с подтверждением email.
+// Создаётся при запросе кода, удаляется или помечается использованной после успешного подтверждения.
+// Срок жизни записи задаётся конфигурацией (например, 15 минут); одноразовое использование фиксируется полем UsedAt.
 type VerificationCode struct {
 	ID           uint64    `gorm:"primaryKey" json:"id"`
 	Email        string    `gorm:"index;size:255;not null" json:"email"`
-	CodeHash     string    `gorm:"size:60;not null" json:"-"` // bcrypt-??? ????
-	PasswordHash string    `gorm:"size:60;not null" json:"-"` // bcrypt-??? ?????? ?? ???????? ??????? ??????
+	CodeHash     string    `gorm:"size:60;not null" json:"-"` // bcrypt-хэш шестизначного кода
+	PasswordHash string    `gorm:"size:60;not null" json:"-"` // bcrypt-хэш пароля до создания записи User
 	Username     string    `gorm:"size:64;not null" json:"-"`
 	DisplayName  string    `gorm:"size:128" json:"-"`
 	Attempts     int       `gorm:"default:0" json:"-"`
@@ -37,7 +36,7 @@ type VerificationCode struct {
 	CreatedAt    time.Time `json:"created_at"`
 }
 
-// Category — категориѝ меѝта (кафе, библиотека, парк и т. п.).
+// Category — категория места (кафе, библиотека, парк и т. п.).
 type Category struct {
 	ID          uint64    `gorm:"primaryKey" json:"id"`
 	Name        string    `gorm:"uniqueIndex;size:128;not null" json:"name"`
@@ -47,9 +46,9 @@ type Category struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
-// Place — общеѝтвенное меѝто ѝ координатами и характериѝтиками.
-// Координаты хранѝтѝѝ как пара широта/долгота (SRID 4326). При наличии PostGIS
-// дополнительно поддерживаетѝѝ колонка location типа GEOGRAPHY(POINT, 4326).
+// Place — общественное место с координатами и характеристиками.
+// Координаты хранятся как пара широта/долгота (SRID 4326). При наличии PostGIS
+// дополнительно поддерживается колонка location типа GEOGRAPHY(POINT, 4326).
 type Place struct {
 	ID          uint64    `gorm:"primaryKey" json:"id"`
 	Name        string    `gorm:"size:255;not null" json:"name"`
@@ -63,7 +62,7 @@ type Place struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 
-	// Нгрегированные оценки раѝѝчитываютѝѝ запроѝом длѝ клиента.
+	// Агрегированные оценки рассчитываются в запросе для клиента.
 	AvgNoise   float64 `gorm:"-" json:"avg_noise"`
 	AvgLight   float64 `gorm:"-" json:"avg_light"`
 	AvgCrowd   float64 `gorm:"-" json:"avg_crowd"`
@@ -73,7 +72,7 @@ type Place struct {
 	ReviewsCnt int     `gorm:"-" json:"reviews_count"`
 }
 
-// Review — отзыв пользователѝ о меѝте ѝ ѝенѝорными оценками 1..5.
+// Review — отзыв пользователя о месте с сенсорными оценками 1..5.
 type Review struct {
 	ID         uint64    `gorm:"primaryKey" json:"id"`
 	PlaceID    uint64    `gorm:"index;not null" json:"place_id"`
@@ -89,7 +88,7 @@ type Review struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
-// Favorite — избранное меѝто пользователѝ.
+// Favorite — избранное место пользователя.
 type Favorite struct {
 	UserID    uint64    `gorm:"primaryKey" json:"user_id"`
 	PlaceID   uint64    `gorm:"primaryKey" json:"place_id"`

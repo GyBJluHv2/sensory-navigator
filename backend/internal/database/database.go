@@ -23,7 +23,7 @@ func Connect(cfg *config.Config) (*gorm.DB, error) {
 
 func Migrate(db *gorm.DB) error {
 	if err := enablePostGIS(db); err != nil {
-		log.Printf("PostGIS недоѝтупен (запроѝ nearby будет иѝпользовать формулу Хаверѝина): %v", err)
+		log.Printf("PostGIS недоступен (запрос nearby будет использовать формулу Хаверсина): %v", err)
 	}
 
 	if err := db.AutoMigrate(
@@ -46,9 +46,9 @@ func enablePostGIS(db *gorm.DB) error {
 	return db.Exec("CREATE EXTENSION IF NOT EXISTS postgis").Error
 }
 
-// createGISTIndex добавлѝет geography-колонку и проѝтранѝтвенный индекѝ,
-// еѝли PostGIS уѝтановлен. Подобные манипулѝции — единѝтвенный нетривиальный
-// и не покрываемый миграциѝми GORM учаѝток логики на SQL.
+// createGISTIndex добавляет geography-колонку и пространственный индекс,
+// если PostGIS установлен. Подобные манипуляции — единственный нетривиальный
+// и не покрываемый миграциями GORM участок логики на SQL.
 func createGISTIndex(db *gorm.DB) {
 	statements := []string{
 		`ALTER TABLE places ADD COLUMN IF NOT EXISTS location GEOGRAPHY(POINT, 4326)`,
